@@ -3,13 +3,16 @@ package org.capgemini.stock_exchange.service;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.capgemini.stock_exchange.entity.StockEntity;
 import org.capgemini.stock_exchange.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StockService {
+public class CalendarService {
+
 	@Autowired
 	StockRepository repository;// = new StockRepository();
 	
@@ -19,18 +22,8 @@ public class StockService {
 //			repository.init();
 //		}
 //	}
-
-
-	public List<StockEntity> getEntitiesByDate(Date date){
-		return repository.getEntitiesByDate(date);
-	}
 	
-	public List<StockEntity> getEntitiesByName(String name){
-		return repository.getEntitiesByName(name);
+	public List<Date> getFirstAndLastDays(){
+		return repository.getFirstAndLastDays();
 	}
-	
-	public List<StockEntity> getEntities(String name, Date date){
-		return repository.getEntities(name, date);
-	}
-	
 }

@@ -4,91 +4,101 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
 import org.capgemini.stock_exchange.entity.StockEntity;
-import org.springframework.stereotype.Component;
+import org.capgemini.stock_exchange.stock_loader.EntityGenerator;
+import org.capgemini.stock_exchange.stock_loader.StockLoader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import javax.annotation.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 
 @Repository
 public class StockRepository {
 
-	private final String DATA_SPLITTER = ",";
+	@Autowired
+	StockLoader stockLoader;
 
-	List<StockEntity> data = generateEntities(importData());
+	public List<StockEntity> getEntitiesByDate(Date date) {
 
-	public List<String> importData() {
-		List<String> result = new ArrayList<String>();
-		String adress = "C:\\Users\\JBODZIOC\\Desktop\\data.csv";
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-		File file = new File(adress);
-		Scanner sc;
+		EntityTransaction transaction = entityManager.getTransaction();
+		transaction.begin();
 
-		try {
-			sc = new Scanner(file);
-			while (sc.hasNextLine()) {
-				result.add(sc.nextLine());
-			}
-			sc.close();
-		}
+		List<StockEntity> resultList = entityManager.createQuery("from StockEntity ee where ee.date = :last")
+				.setParameter("last", date).getResultList();
 
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		entityManager.close();
+		entityManagerFactory.close();
+
+		return resultList;
+	}
+
+	public List<StockEntity> getEntitiesByName(String stock_name) {
+
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+		EntityTransaction transaction = entityManager.getTransaction();
+		transaction.begin();
+
+		List<StockEntity> resultList = entityManager.createQuery("from StockEntity ee where ee.stockName = :first")
+				.setParameter("first", stock_name).getResultList();
+
+		entityManager.close();
+		entityManagerFactory.close();
+
+		return resultList;
+	}
+
+	public List<StockEntity> getEntities(String stock_name, Date date) {
+
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+		EntityTransaction transaction = entityManager.getTransaction();
+		transaction.begin();
+
+		List<StockEntity> resultList = entityManager
+				.createQuery("from StockEntity ee where ee.stockName = :first and ee.date = :last")
+				.setParameter("first", stock_name).setParameter("last", date).getResultList();
+
+		entityManager.close();
+		entityManagerFactory.close();
+
+		return resultList;
+	}
+
+	public List<Date> getFirstAndLastDays() {
+		List<Date> result = new ArrayList<Date>();
+
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+		EntityTransaction transaction = entityManager.getTransaction();
+		transaction.begin();
+
+		List<Date> resultListMin = entityManager.createQuery("select min(ee.date)from StockEntity ee")
+				.getResultList();
+
+		List<Date> resultListMax = entityManager.createQuery("select max(ee.date)from StockEntity ee")
+				.getResultList();
+
+		entityManager.close();
+		entityManagerFactory.close();
+
+		result.add(resultListMin.get(0));
+		result.add(resultListMax.get(0));
 
 		return result;
-	}
-
-	public List<StockEntity> generateEntities(List<String> inputData) {
-		List<StockEntity> result = new ArrayList<StockEntity>();
-
-		for (String line : inputData) {
-			String splitLines[] = line.split(DATA_SPLITTER);
-			result.add(new StockEntity(splitLines[0], Integer.parseInt(splitLines[1]), Double.parseDouble(splitLines[2])));
-		}
-
-		return result;
-	}
-
-
-	public List<StockEntity> getAllEntities() {
-
-		return data;
-	}
-
-	public List<StockEntity> getEntitiesByDate(int date, List<StockEntity> inputList) {
-		List<StockEntity> result = new ArrayList<StockEntity>();
-
-		for (StockEntity entity : inputList) {
-			if (entity.getDate() == date) {
-				result.add(entity);
-			}
-		}
-
-		return result;
-	}
-
-	public List<StockEntity> getEntitiesByName(String name, List<StockEntity> inputList) {
-		List<StockEntity> result = new ArrayList<StockEntity>();
-
-		for (StockEntity entity : inputList) {
-			if (entity.getName().equals(name)) {
-				result.add(entity);
-			}
-		}
-
-		return result;
-	}
-
-	public List<StockEntity> sortEntitiesByDate(List<StockEntity> inputList) {
-
-		Collections.sort(inputList);
-
-		return inputList;
 	}
 
 }
-
-
-
