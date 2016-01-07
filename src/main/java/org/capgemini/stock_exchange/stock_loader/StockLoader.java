@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component;
 public class StockLoader {
 
 	@Autowired
-	EntityGenerator entityGenerator;
+	private EntityGenerator entityGenerator;
 
 	@Value(value = "#{applicationProperties['adress']}")
-	String adress;
+	private String adress;
 
 	public void importData() {
 
@@ -42,6 +42,8 @@ public class StockLoader {
 
 	}
 
+	// TODO JBODZIOCH spytaj o transactional
+	// @Transactional
 	private void saveToDatabase(String inputData) {
 
 		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");

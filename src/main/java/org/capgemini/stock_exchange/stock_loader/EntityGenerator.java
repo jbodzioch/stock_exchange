@@ -2,31 +2,32 @@ package org.capgemini.stock_exchange.stock_loader;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.capgemini.stock_exchange.entity.StockEntity;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EntityGenerator {
 
-	private final String DATA_SPLITTER = ",";
+	private final static String DATA_SPLITTER = ",";
+	private final int NAME = 0;
+	private final int DATE = 1;
+	private final int COST = 2;
+
+	@Value(value = "#{new java.text.SimpleDateFormat('${dateformat}')}")
+	private DateFormat format;
 
 	public StockEntity generateEntity(String inputData) {
+
 		StockEntity result = null;
-
 		String splitLines[] = inputData.split(DATA_SPLITTER);
-
-		DateFormat format = new SimpleDateFormat("yyyyMMdd");
-
 		Date date;
+
 		try {
-			date = format.parse(splitLines[1]);
-			result = new StockEntity(splitLines[0], date, Float.parseFloat(splitLines[2]));
+			date = format.parse(splitLines[DATE]);
+			result = new StockEntity(splitLines[NAME], date, Double.parseDouble(splitLines[COST]));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

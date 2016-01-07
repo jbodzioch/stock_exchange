@@ -1,6 +1,5 @@
 package org.capgemini.stock_exchange.entity;
 
-
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -19,25 +18,26 @@ public class StockEntity {
 	@Id
 	@Column(name = "stock_id", length = 11, nullable = false)
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	Long stockId;
+	private Long stockId;
 
 	@Column(name = "stock_name", length = 50, nullable = false)
-	String stockName;
-	
-	public StockEntity(){}
+	private String stockName;
 
-	public StockEntity(String stockName, Date date, Float cost) {
+	@Temporal(TemporalType.DATE)
+	@Column(name = "date", columnDefinition = "DATE")
+	private Date date;
+
+	@Column(name = "cost", nullable = false)
+	private Double cost;
+
+	public StockEntity() {
+	}
+
+	public StockEntity(String stockName, Date date, Double cost) {
 		this.stockName = stockName;
 		this.date = date;
 		this.cost = cost;
 	}
-
-	@Temporal(TemporalType.DATE)
-	@Column(name = "date", columnDefinition = "DATE")
-	Date date;
-
-	@Column(name = "cost", nullable = false)
-	Float cost;
 
 	public Long getStockId() {
 		return stockId;
@@ -63,11 +63,11 @@ public class StockEntity {
 		this.date = date;
 	}
 
-	public Float getCost() {
+	public Double getCost() {
 		return cost;
 	}
 
-	public void setCost(Float cost) {
+	public void setCost(Double cost) {
 		this.cost = cost;
 	}
 

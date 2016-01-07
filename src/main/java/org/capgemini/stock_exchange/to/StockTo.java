@@ -1,30 +1,26 @@
 package org.capgemini.stock_exchange.to;
 
-public class StockTo implements Comparable<StockTo> {
+import java.util.Date;
 
-	String name;
-	int date;
-	double cost;
+public class StockTo {
 
-	public StockTo(String name, int date, double cost) {
-		this.name = name;
-		this.date = date;
-		this.cost = cost;
+	private String stockName;
+	private Date date;
+	private double cost;
+
+	public String getStockName() {
+		return stockName;
 	}
 
-	public String getName() {
-		return name;
+	public void setStockName(String stockName) {
+		this.stockName = stockName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getDate() {
+	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(int date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 
@@ -36,12 +32,10 @@ public class StockTo implements Comparable<StockTo> {
 		this.cost = cost;
 	}
 
-	public int compareTo(StockTo another) {
-		if (this.getDate() < another.getDate()) {
-			return -1;
-		} else {
-			return 1;
-		}
+	public StockTo(String stockName, Date date, double cost) {
+		this.stockName = stockName;
+		this.date = date;
+		this.cost = cost;
 	}
 
 }

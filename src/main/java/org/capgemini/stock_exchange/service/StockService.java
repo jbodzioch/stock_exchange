@@ -3,34 +3,28 @@ package org.capgemini.stock_exchange.service;
 import java.util.Date;
 import java.util.List;
 
-import org.capgemini.stock_exchange.entity.StockEntity;
+import org.capgemini.stock_exchange.mapper.StockMapper;
 import org.capgemini.stock_exchange.repository.StockRepository;
+import org.capgemini.stock_exchange.to.StockTo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StockService {
+
 	@Autowired
-	StockRepository repository;// = new StockRepository();
-	
-//	@PostConstruct
-//	public void init(){
-//		if(repository.getData().isEmpty()){
-//			repository.init();
-//		}
-//	}
+	private StockRepository repository;
 
+	public List<StockTo> getStockByDate(Date date) {
+		return StockMapper.mapEntityList(repository.getEntitiesByDate(date));
+	}
 
-	public List<StockEntity> getEntitiesByDate(Date date){
-		return repository.getEntitiesByDate(date);
+	public List<StockTo> getStockByName(String name) {
+		return StockMapper.mapEntityList(repository.getEntitiesByName(name));
 	}
-	
-	public List<StockEntity> getEntitiesByName(String name){
-		return repository.getEntitiesByName(name);
+
+	public List<StockTo> getStock(String name, Date date) {
+		return StockMapper.mapEntityList(repository.getEntities(name, date));
 	}
-	
-	public List<StockEntity> getEntities(String name, Date date){
-		return repository.getEntities(name, date);
-	}
-	
+
 }
