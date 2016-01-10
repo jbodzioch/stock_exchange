@@ -1,23 +1,26 @@
 package org.capgemini.stock_exchange.utils;
 
-import org.capgemini.stock_exchange.to.StockPackTo;
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Component;
 
 @Component
 public class Utils {
-	
-	//TODO JBODZIOCH raz dziala a raz nie, wtf
+
+	private final static int ROUND_UP_DECIMAL_PLACES = 2;
+	private final static int MATH_RANDOM_MIN_VALUE_COUNTER_HELPER = 1;
+
 	public double roundToMoneyFormat(double number) {
-		
-		number = Math.round(number * 100);
-		number = number/100;
-		
-		return number;
+
+		double result = new BigDecimal(number).setScale(ROUND_UP_DECIMAL_PLACES, BigDecimal.ROUND_HALF_UP)
+				.doubleValue();
+
+		return result;
 	}
-	
+
 	public int generateRandom(int min, int max) {
 
-		int range = (max - min) + 1;
+		int range = (max - min) + MATH_RANDOM_MIN_VALUE_COUNTER_HELPER;
 
 		return (int) (Math.random() * range) + min;
 	}

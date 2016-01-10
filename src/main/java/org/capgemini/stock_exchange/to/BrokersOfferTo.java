@@ -6,7 +6,7 @@ public class BrokersOfferTo {
 	private double cost;
 	private int count;
 	private double provision;
-	
+
 	public BrokersOfferTo(String stockName, double cost, int count, double provision) {
 		this.stockName = stockName;
 		this.cost = cost;

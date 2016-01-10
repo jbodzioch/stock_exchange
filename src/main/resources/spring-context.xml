@@ -13,10 +13,10 @@
 
 	<context:annotation-config />
 	<context:component-scan base-package="org.capgemini.stock_exchange" />
-	<context:property-placeholder location="config/application.properties" /> 
+	<context:property-placeholder location="config/application.properties" />
 
-	 <util:properties id="applicationProperties"
-		location="classpath:config/application.properties" /> 
+	<util:properties id="applicationProperties"
+		location="classpath:config/application.properties" />
 
 	<aop:aspectj-autoproxy />
 

@@ -4,30 +4,47 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.capgemini.stock_exchange.service.StockService;
 import org.capgemini.stock_exchange.to.BrokersOfferTo;
 import org.capgemini.stock_exchange.to.StockPackTo;
 import org.capgemini.stock_exchange.to.StockTo;
 import org.capgemini.stock_exchange.utils.Utils;
-import org.h2.util.MathUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import org.apache.commons.lang3.math.*;
-
+@SuppressWarnings("restriction")
 @Component
 public class Broker {
 
-	@Autowired
+	private final static double RESET_OPERATION_RESULT = 0;
+	private final static double PERCENTAGE_MULTIPLIER = 0.01;
+	private final static double PROVISION_MULTIPLIER = 0.05;
+	private final static double MIN_AVAILABLE_STOCK_MULTIPLIER = 0.8;
+	private final static int MIN_TAX_IN_PERCENT = 0;
+	private final static int MAX_TAX_IN_PERCENT = 2;
+	private final static int BASE_VALUE = 1;
+	private final static int MIN_PROVISION = 5;
+
 	private StockService service;
-	
-	@Autowired
 	private Utils utils;
 
-	private double todayOperationResult = 0;
+	private double todayOperationResult;
 	private List<StockTo> todayStock = new ArrayList<StockTo>();
 	private List<BrokersOfferTo> todayBuyOffer = new ArrayList<BrokersOfferTo>();
 	private List<BrokersOfferTo> todaySellOffer = new ArrayList<BrokersOfferTo>();
+
+	@Autowired
+	public Broker(StockService service, Utils utils) {
+		this.service = service;
+		this.utils = utils;
+	}
+
+	@PostConstruct
+	public void setInitialConditions() {
+		this.todayOperationResult = utils.roundToMoneyFormat(RESET_OPERATION_RESULT);
+	}
 
 	public double getTodayOperationResult() {
 		return todayOperationResult;
@@ -43,6 +60,7 @@ public class Broker {
 
 	public void updateTodayStock(Date date) {
 		todayStock = service.getStockByDate(date);
+		this.todayOperationResult = utils.roundToMoneyFormat(RESET_OPERATION_RESULT);
 	}
 
 	public List<BrokersOfferTo> checkBuy(List<StockPackTo> stockPacks) {
@@ -71,25 +89,25 @@ public class Broker {
 
 	private double checkTax() {
 
-		int min = 0;
-		int max = 2;
+		int min = MIN_TAX_IN_PERCENT;
+		int max = MAX_TAX_IN_PERCENT;
 
-		return 0.01 * utils.generateRandom(min, max);
+		return PERCENTAGE_MULTIPLIER * utils.generateRandom(min, max);
 	}
 
 	private double checkActualBuyCost(StockPackTo stockPack) {
 
-		return utils.roundToMoneyFormat(checkTodayStockCost(stockPack) * (1 + checkTax()));
+		return utils.roundToMoneyFormat(checkTodayStockCost(stockPack) * (BASE_VALUE + checkTax()));
 	}
 
 	private double checkActualSellCost(StockPackTo stockPack) {
 
-		return utils.roundToMoneyFormat(checkTodayStockCost(stockPack) * (1 - checkTax()));
+		return utils.roundToMoneyFormat(checkTodayStockCost(stockPack) * (BASE_VALUE - checkTax()));
 	}
 
 	private int checkAvailability(StockPackTo stockPack) {
 
-		int min = (int) (stockPack.getCount() * 0.8);
+		int min = (int) (stockPack.getCount() * MIN_AVAILABLE_STOCK_MULTIPLIER);
 		int max = stockPack.getCount();
 
 		return utils.generateRandom(min, max);
@@ -112,10 +130,10 @@ public class Broker {
 	}
 
 	private double checkProvision(StockPackTo stockPack) {
-		double provision = (checkTodayStockCost(stockPack) * stockPack.getCount()) * 0.05;
+		double provision = (checkTodayStockCost(stockPack) * stockPack.getCount()) * PROVISION_MULTIPLIER;
 
-		if ((checkTodayStockCost(stockPack) * stockPack.getCount()) * 0.05 < 5) {
-			provision = 5;
+		if ((checkTodayStockCost(stockPack) * stockPack.getCount()) * PROVISION_MULTIPLIER < MIN_PROVISION) {
+			provision = MIN_PROVISION;
 		}
 
 		return utils.roundToMoneyFormat(provision);

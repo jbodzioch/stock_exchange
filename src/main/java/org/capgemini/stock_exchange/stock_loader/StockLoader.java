@@ -17,11 +17,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockLoader {
 
-	@Autowired
 	private EntityGenerator entityGenerator;
 
 	@Value(value = "#{applicationProperties['adress']}")
 	private String adress;
+
+	private EntityManagerFactory entityManagerFactory;
+	private EntityManager entityManager;
+	private EntityTransaction transaction;
+
+	@Autowired
+	public StockLoader(EntityGenerator entityGenerator) {
+		this.entityGenerator = entityGenerator;
+	}
 
 	public void importData() {
 
@@ -39,29 +47,35 @@ public class StockLoader {
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
 	}
 
-	// TODO JBODZIOCH spytaj o transactional
-	// @Transactional
 	private void saveToDatabase(String inputData) {
 
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		startTransaction();
 
-		EntityTransaction transaction = entityManager.getTransaction();
-		transaction.begin();
-
-		StockEntity aE = entityGenerator.generateEntity(inputData);
+		StockEntity entity = entityGenerator.generateEntity(inputData);
 		entityManager.clear();
+		entityManager.merge(entity);
 
-		entityManager.merge(aE);
+		endTransaction();
+	}
+
+	private void startTransaction() {
+
+		entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");
+		entityManager = entityManagerFactory.createEntityManager();
+
+		transaction = entityManager.getTransaction();
+		transaction.begin();
+	}
+
+	private void endTransaction() {
+
 		entityManager.flush();
 		transaction.commit();
 
 		entityManager.close();
 		entityManagerFactory.close();
-
 	}
 
 }

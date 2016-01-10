@@ -1,15 +1,13 @@
 package org.capgemini.stock_exchange.service;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.capgemini.stock_exchange.entity.StockEntity;
 import org.capgemini.stock_exchange.to.StockTo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +25,7 @@ public class StockServiceTest {
 
 	@Value(value = "#{new java.text.SimpleDateFormat('${dateformat}')}")
 	private DateFormat format;
-	
+
 	@Test
 	public void shouldGetDataByNameAndDate() throws ParseException {
 
@@ -48,7 +46,7 @@ public class StockServiceTest {
 		String stringDate = "20011024";
 		Date date = format.parse(stringDate);
 		int expectedSize = 2;
-		
+
 		List<StockTo> stockFound = service.getStockByDate(date);
 
 		assertFalse(stockFound.isEmpty());
@@ -60,7 +58,7 @@ public class StockServiceTest {
 
 		String name = "INTEL";
 		int expectedSize = 3;
-		
+
 		List<StockTo> stockFound = service.getStockByName(name);
 
 		assertFalse(stockFound.isEmpty());

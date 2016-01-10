@@ -12,8 +12,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class StockService {
 
-	@Autowired
 	private StockRepository repository;
+
+	@Autowired
+	public StockService(StockRepository repository) {
+		this.repository = repository;
+	}
 
 	public List<StockTo> getStockByDate(Date date) {
 		return StockMapper.mapEntityList(repository.getEntitiesByDate(date));

@@ -12,51 +12,63 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RandomStrategy implements Strategy{
-	
+public class RandomStrategy implements Strategy {
 
-	//TODO JBODZIOCH jak to zrobic autowired bo cos nie dziala
-	Utils utils = new Utils();
-	
-	public List<StockPackTo> proposeStockToBuy(List<StockTo> todayStock){
-		List<StockPackTo> result = new ArrayList<StockPackTo>();
-		
-		int buy = utils.generateRandom(0, todayStock.size()-1);
-		int count = utils.generateRandom(1, 10);
-		
-		result.add(new StockPackTo(todayStock.get(buy).getStockName(), count));
-		
-		return result;
+	private final static int FIRST_STOCK = 0;
+	private final static int LAST_STOCK_PROPER_POINTER = 1;
+	private final static int MIN_STOCK_TO_TRADE = 0;
+	private final static int MAX_STOCK_TO_TRADE = 10;
+
+	private Utils utils;
+
+	@Autowired
+	public RandomStrategy(Utils utils) {
+		this.utils = utils;
 	}
-	
-	public List<StockPackTo> validateStockToBuy(List<BrokersOfferTo> brokersOffer){
+
+	public List<StockPackTo> proposeStockToBuy(List<StockTo> todayStock) {
 		List<StockPackTo> result = new ArrayList<StockPackTo>();
-		
-		for(BrokersOfferTo offer: brokersOffer){
-			result.add(new StockPackTo(offer.getStockName(), offer.getCount()));
+
+		if (!todayStock.isEmpty()) {
+			int buy = utils.generateRandom(FIRST_STOCK, todayStock.size() - LAST_STOCK_PROPER_POINTER);
+			int count = utils.generateRandom(MIN_STOCK_TO_TRADE, MAX_STOCK_TO_TRADE);
+
+			result.add(new StockPackTo(todayStock.get(buy).getStockName(), count));
 		}
-		
-		return result;
-	}
-	
-	public List<StockPackTo> proposeStockToSell(List<StockTo> todayStock){
-		List<StockPackTo> result = new ArrayList<StockPackTo>();
-		
-		int sell = utils.generateRandom(0, todayStock.size()-1);
-		int count = utils.generateRandom(1, 10);
-		
-		result.add(new StockPackTo(todayStock.get(sell).getStockName(), count));
 
 		return result;
 	}
-	
-	public List<StockPackTo> validateStockToSell(List<BrokersOfferTo> brokersOffer){
+
+	public List<StockPackTo> validateStockToBuy(List<BrokersOfferTo> brokersOffer) {
 		List<StockPackTo> result = new ArrayList<StockPackTo>();
-		
-		for(BrokersOfferTo offer: brokersOffer){
+
+		for (BrokersOfferTo offer : brokersOffer) {
 			result.add(new StockPackTo(offer.getStockName(), offer.getCount()));
 		}
-		
+
+		return result;
+	}
+
+	public List<StockPackTo> proposeStockToSell(List<StockTo> todayStock, List<StockPackTo> availableStock) {
+		List<StockPackTo> result = new ArrayList<StockPackTo>();
+
+		if (!todayStock.isEmpty()&&!availableStock.isEmpty()) {
+			int sell = utils.generateRandom(FIRST_STOCK, availableStock.size() - LAST_STOCK_PROPER_POINTER);
+			int count = utils.generateRandom(MIN_STOCK_TO_TRADE, availableStock.get(sell).getCount());
+			
+			result.add(new StockPackTo(availableStock.get(sell).getStockName(), count));
+		}
+
+		return result;
+	}
+
+	public List<StockPackTo> validateStockToSell(List<BrokersOfferTo> brokersOffer) {
+		List<StockPackTo> result = new ArrayList<StockPackTo>();
+
+		for (BrokersOfferTo offer : brokersOffer) {
+			result.add(new StockPackTo(offer.getStockName(), offer.getCount()));
+		}
+
 		return result;
 	}
 

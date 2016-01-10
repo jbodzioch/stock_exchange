@@ -1,5 +1,6 @@
 package org.capgemini.stock_exchange.player;
 
+import org.capgemini.stock_exchange.exception.TryingToSellUnavailableStockException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class PlayerTest {
 
 	@Autowired
-	Player player;
-	
-	//TODO JBODZIOCH napisz tu cos sensownego
-	
+	private Player player;
+
 	@Test
-	public void shouldNotFuckUp(){
+	public void shouldProperlyProcessPlay() throws TryingToSellUnavailableStockException {
 		player.play();
 	}
-	
+
 }
