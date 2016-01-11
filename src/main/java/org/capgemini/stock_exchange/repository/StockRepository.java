@@ -12,6 +12,7 @@ import javax.persistence.Persistence;
 import org.capgemini.stock_exchange.entity.StockEntity;
 import org.capgemini.stock_exchange.stock_loader.StockLoader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 @SuppressWarnings({ "restriction", "unchecked" })
@@ -20,6 +21,9 @@ public class StockRepository {
 
 	private final static Long FIRST_KEY = 1L;
 	private final static int FIRST_VALUE = 0;
+	
+	@Value(value = "#{applicationProperties['entityManagerFactoryName']}")
+	private String entityManagerFactoryName;
 
 	private StockLoader stockLoader;
 
@@ -43,8 +47,8 @@ public class StockRepository {
 
 		init();
 
-		List<StockEntity> resultList = entityManager.createQuery("from StockEntity ee where ee.date = :last")
-				.setParameter("last", date).getResultList();
+		List<StockEntity> resultList = entityManager.createQuery("from StockEntity ee where ee.date = :date")
+				.setParameter("date", date).getResultList();
 
 		close();
 
@@ -53,7 +57,7 @@ public class StockRepository {
 
 	private void init() {
 
-		entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");
+		entityManagerFactory = Persistence.createEntityManagerFactory(entityManagerFactoryName);
 		entityManager = entityManagerFactory.createEntityManager();
 	}
 
@@ -61,8 +65,8 @@ public class StockRepository {
 
 		init();
 
-		List<StockEntity> resultList = entityManager.createQuery("from StockEntity ee where ee.stockName = :first")
-				.setParameter("first", stock_name).getResultList();
+		List<StockEntity> resultList = entityManager.createQuery("from StockEntity ee where ee.stockName = :name")
+				.setParameter("name", stock_name).getResultList();
 
 		close();
 
@@ -74,8 +78,8 @@ public class StockRepository {
 		init();
 
 		List<StockEntity> resultList = entityManager
-				.createQuery("from StockEntity ee where ee.stockName = :first and ee.date = :last")
-				.setParameter("first", stock_name).setParameter("last", date).getResultList();
+				.createQuery("from StockEntity ee where ee.stockName = :name and ee.date = :date")
+				.setParameter("name", stock_name).setParameter("date", date).getResultList();
 
 		close();
 

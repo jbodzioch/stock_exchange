@@ -21,6 +21,9 @@ public class StockLoader {
 
 	@Value(value = "#{applicationProperties['adress']}")
 	private String adress;
+	
+	@Value(value = "#{applicationProperties['entityManagerFactoryName']}")
+	private String entityManagerFactoryName;
 
 	private EntityManagerFactory entityManagerFactory;
 	private EntityManager entityManager;
@@ -62,7 +65,7 @@ public class StockLoader {
 
 	private void startTransaction() {
 
-		entityManagerFactory = Persistence.createEntityManagerFactory("plain-jpa");
+		entityManagerFactory = Persistence.createEntityManagerFactory(entityManagerFactoryName);
 		entityManager = entityManagerFactory.createEntityManager();
 
 		transaction = entityManager.getTransaction();
